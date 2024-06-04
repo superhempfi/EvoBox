@@ -27,34 +27,68 @@ public class EvoBoxGUI extends JPanel {
 
 
         // Fruit wird geladen
-        loadFruit();
+        // i = 0 ; i < 10 -> 10 mal geladen
+
+        // Anzahl von spawns
+        int toSpawn = 50;
+
+        for (int i = 0; i < toSpawn; i++) {
+            int x = (int) (Math.random() * (gamePanel.getWidth() - 75));
+            int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
+            loadFruit(x, y, 32);
+        }
+
+        loadSlimes(50, 200, 64);
 
 
     }
 
 
-    private void loadFruit() {
+    private void loadFruit(int x, int y, int size) {
+
+
+        int fruitWidth = size;
+        int fruitHeight = fruitWidth;
+
 
         ImageIcon fruit = new ImageIcon(getClass().getClassLoader().getResource("EvoBox/images/apple.png"));
-        Image scaledFruit = fruit.getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH);
+        Image scaledFruit = fruit.getImage().getScaledInstance(fruitWidth, fruitHeight, Image.SCALE_SMOOTH);
         ImageIcon scaledFruitIcon = new ImageIcon(scaledFruit);
-
-
-
 
         int height = scaledFruitIcon.getIconHeight();
         int width = scaledFruitIcon.getIconWidth();
 
-        food aFood = new food(100, 200, width, height, gamePanel.getWidth(), gamePanel.getHeight(), scaledFruitIcon);
+        food aFood = new food(x, y, width, height, gamePanel.getWidth(), gamePanel.getHeight(), scaledFruitIcon);
 
         allFood[anzFood] = aFood;
         gamePanel.add(aFood);
-        gamePanel.repaint();
-
-        System.out.println("Jawoll ja");
-        System.out.println(aFood);
 
     }
+
+    private void loadSlimes(int x, int y, int size) {
+
+        int slimeWidth = size;
+        int slimeHeight = slimeWidth;
+
+        ImageIcon slime = new ImageIcon(getClass().getClassLoader().getResource("EvoBox/images/slime.png"));
+        Image scaledSlime = slime.getImage().getScaledInstance(slimeWidth, slimeHeight, Image.SCALE_SMOOTH);
+        ImageIcon scaledSlimeIcon = new ImageIcon(scaledSlime);
+
+        int height = scaledSlimeIcon.getIconHeight();
+        int width = scaledSlimeIcon.getIconWidth();
+
+        slime aSlime = new slime(x, y, width, height, gamePanel.getWidth(), gamePanel.getHeight(), scaledSlimeIcon);
+
+        gamePanel.add(aSlime);
+
+    }
+
+
+
+
+
+
+
 
 
     public JPanel getMainPanel() {
@@ -73,7 +107,5 @@ public class EvoBoxGUI extends JPanel {
         frame.setVisible(true);
     }
 
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
-    }
+
 }

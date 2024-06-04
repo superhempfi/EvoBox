@@ -36,18 +36,16 @@ public class EvoBoxGUI extends JPanel {
     private void loadFruit() {
 
         ImageIcon fruit = new ImageIcon(getClass().getClassLoader().getResource("EvoBox/images/apple.png"));
-
-        if (fruit.getIconWidth() == -1 || fruit.getIconHeight() == -1) {
-            System.out.println("Failed to load image: src/images/apple.png");
-            return;
-        }
+        Image scaledFruit = fruit.getImage().getScaledInstance(500, 500, Image.SCALE_SMOOTH);
+        ImageIcon scaledFruitIcon = new ImageIcon(scaledFruit);
 
 
 
-        int height = fruit.getIconHeight();
-        int width = fruit.getIconWidth();
 
-        food aFood = new food(100, 200, width, height, gamePanel.getWidth(), gamePanel.getHeight(), fruit);
+        int height = scaledFruitIcon.getIconHeight();
+        int width = scaledFruitIcon.getIconWidth();
+
+        food aFood = new food(100, 200, width, height, gamePanel.getWidth(), gamePanel.getHeight(), scaledFruitIcon);
 
         allFood[anzFood] = aFood;
         gamePanel.add(aFood);

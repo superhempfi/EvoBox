@@ -1,83 +1,77 @@
 package EvoBox;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-
-public class EvoBoxGUI {
+public class EvoBoxGUI extends JPanel {
     private JPanel mainPanel;
     private JPanel gamePanel;
-
-    //private Timer myTimer;
 
     private int anzFood = 0;
     private int maxFood = 10;
     private food[] allFood = new food[maxFood];
 
+    public EvoBoxGUI() {
+        mainPanel = new JPanel();
+        mainPanel.setLayout(null);
+        mainPanel.setBounds(0, 0, 1200, 800);
+        mainPanel.setPreferredSize(new Dimension(1200, 800));
 
-
-    public EvoBoxGUI(){
+        gamePanel = new JPanel();
         gamePanel.setBounds(0, 0, 1200, 800);
         gamePanel.setLayout(null);
-
+        gamePanel.setPreferredSize(new Dimension(1200,800));
+        mainPanel.add(gamePanel);
 
 
         // Fruit wird geladen
-
-        ImageIcon fruit = new ImageIcon("src/images/apple.png");
-        int height = fruit.getIconHeight();
-        int width = fruit.getIconWidth();
-        //food aFood = new food(Math.round(Math.random()*gamePanel.getWidth()), Math.round(Math.random()*gamePanel.getHeight()), fruit);
-
-        food aFood = new food(100, 200, width, height, gamePanel.getWidth(), gamePanel.getHeight(), fruit);
-        allFood[anzFood] = aFood;
-        gamePanel.add(aFood);
-
-        System.out.println("Jawoll ja");
-        System.out.println(aFood);
-
-
+        loadFruit();
 
 
     }
 
 
+    private void loadFruit() {
+
+        ImageIcon fruit = new ImageIcon(getClass().getClassLoader().getResource("EvoBox/images/apple.png"));
+
+        if (fruit.getIconWidth() == -1 || fruit.getIconHeight() == -1) {
+            System.out.println("Failed to load image: src/images/apple.png");
+            return;
+        }
+
+
+
+        int height = fruit.getIconHeight();
+        int width = fruit.getIconWidth();
+
+        food aFood = new food(100, 200, width, height, gamePanel.getWidth(), gamePanel.getHeight(), fruit);
+
+        allFood[anzFood] = aFood;
+        gamePanel.add(aFood);
+        gamePanel.repaint();
+
+        System.out.println("Jawoll ja");
+        System.out.println(aFood);
+
+    }
+
+
+    public JPanel getMainPanel() {
+        return mainPanel;
+    }
+
     public static void main(String[] args) {
-
-
-        ImageIcon playField = new ImageIcon("src/EvoBox/images/field.png");
-        ImageIcon foodApple = new ImageIcon("src/EvoBox/images/apple.png");
-        JLabel gameBG = new JLabel(playField);
-        JLabel food = new JLabel(foodApple);
-
         JFrame frame = new JFrame("EvoBox am Grinden");
-        frame.setContentPane(new EvoBoxGUI().mainPanel);
-        frame.add(gameBG);
-        frame.add(food);
-
+        EvoBoxGUI evoBoxGUI = new EvoBoxGUI();
+        frame.setContentPane(evoBoxGUI.getMainPanel());
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+        frame.setSize(1200, 800);
         frame.setLocationRelativeTo(null);
-        frame.setIconImage(playField.getImage());
-
-        frame.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-
-            }
-        });
+        frame.setResizable(false); // Prevent the user from resizing the window
         frame.setVisible(true);
     }
 

@@ -21,4 +21,14 @@ public class food extends JLabel {
 
     }
 
+    @Override
+    public String toString() {
+        return "food{" +
+                "x=" + x +
+                ", y=" + y +
+                ", width=" + w +
+                ", height=" + h +
+                '}';
+    }
+
 }

@@ -30,7 +30,7 @@ public class EvoBoxGUI extends JPanel {
         // i = 0 ; i < 10 -> 10 mal geladen
 
         // Anzahl von spawns
-        int toSpawn = 50;
+        int toSpawn = 1;
 
         for (int i = 0; i < toSpawn; i++) {
             int x = (int) (Math.random() * (gamePanel.getWidth() - 75));

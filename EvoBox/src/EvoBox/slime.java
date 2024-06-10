@@ -3,6 +3,7 @@ package EvoBox;
 import javax.swing.*;
 
 public class slime extends JLabel {
+
     protected int x, y;
     protected int fw, fh;
     protected int w, h;
@@ -24,14 +25,17 @@ public class slime extends JLabel {
         this.setBounds(x, y, w, h);
     }
 
-    public void startMove(int targetX, int targetY, long duration) {
+    public void startMove(int targetX, int targetY, long duration, int targetSize) {
         this.startX = this.x;
         this.startY = this.y;
-        this.targetX = targetX;
-        this.targetY = targetY;
+
+        this.targetX = targetX + (targetSize / 2) - (this.w / 2);
+        this.targetY = targetY + (targetSize / 2) - (this.h / 2);
+
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
         this.isMoving = true;
+        System.out.println("Slime move started");
     }
 
     public void updatePosition() {

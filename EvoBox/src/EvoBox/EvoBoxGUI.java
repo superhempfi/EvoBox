@@ -34,26 +34,29 @@ public class EvoBoxGUI extends JPanel {
         gamePanel.setPreferredSize(new Dimension(1200,800));
         mainPanel.add(gamePanel);
 
+
+
         moveButton = new JButton("Move Slime");
         moveButton.setBounds(10, 10, 120, 30);
         moveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (anzSlimes > 0) {
-                    int index = (int) (Math.random() * anzSlimes);
-                    int newX = (int) (Math.random() * (gamePanel.getWidth() - 100));
-                    int newY = (int) (Math.random() * (gamePanel.getHeight() - 100));
-                    allSlimes[index].startMove(newX, newY, 2000);  // Move over 2 seconds
+                System.out.println("Button pressed");
+                if (currentSlimes > 0 && anzFood > 0) {
+                    System.out.println("Move button pressed. Move slime");
+
+                    moveSlimeTowardsFood(allSlimes[0], allFood[0], 2000);  // Move over 2 seconds
                 }
             }
         });
-        mainPanel.add(moveButton);
+        gamePanel.add(moveButton);
+
 
 
         globalTimer = new Timer(10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for(int i = 0; i < anzSlimes; i++) {
+                for(int i = 0; i < currentSlimes; i++) {
                     allSlimes[i].updatePosition();
                 }
                 gamePanel.repaint();
@@ -66,19 +69,19 @@ public class EvoBoxGUI extends JPanel {
 
 
 
+        int toSpawn = 10;       // Anzahl von zu spawnenden Früchten
+        int foodSize = 64;      // Größe von Früchten als Faktor    Base : 16
+        int slimeSize = 64;     // Größe von Slimes als Faktor      Base : 16
 
 
-        // Fruit wird geladen
-        // i = 0 ; i < 10 -> 10 mal geladen
 
-        // Anzahl von spawns
-        int toSpawn = 10;
+            for (int i = 0; i < toSpawn; i++) {
+                int x = (int) (Math.random() * (gamePanel.getWidth() - 75));
+                int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
+                loadFruit(x, y, foodSize);
+            }
 
-        for (int i = 0; i < toSpawn; i++) {
-            int x = (int) (Math.random() * (gamePanel.getWidth() - 75));
-            int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
-            loadFruit(x, y, 32);
-        }
+
 
         loadSlimes(50, 200, 64);
 
@@ -87,7 +90,6 @@ public class EvoBoxGUI extends JPanel {
         System.out.println(allFood[0].getX());
 
 
-        allSlimes[0].startMove(allFood[0].getX(), allFood[0].getY(), 2000);
 
 
 
@@ -133,7 +135,16 @@ public class EvoBoxGUI extends JPanel {
         allSlimes[currentSlimes] = aSlime;
         gamePanel.add(aSlime);
         currentSlimes++;
+        System.out.println(anzSlimes);
 
+    }
+
+    private void moveSlimeTowardsFood(slime aSlime, food aFood, long duration) {
+        int targetX = aFood.getX();
+        int targetY = aFood.getY();
+        int targetSize = aFood.getHeight();
+        System.out.println("Moving slime to " + targetX + " " + targetY);
+        aSlime.startMove(targetX, targetY, duration, targetSize);
     }
 
 

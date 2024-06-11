@@ -13,7 +13,12 @@ public class slime extends JLabel {
     private long duration;
     private boolean isMoving;
 
-    public slime(int x, int y, int w, int h, int fw, int fh, ImageIcon slime) {
+    // Attribute
+    protected double energy;
+    protected double size;
+    protected double perception;
+
+    public slime(int x, int y, int w, int h, int fw, int fh, ImageIcon slime, double energy, double size, double perception) {
         super();
         this.x = x;
         this.y = y;
@@ -22,8 +27,18 @@ public class slime extends JLabel {
         this.fw = fw;
         this.fh = fh;
         this.setIcon(slime);
+
+        this.energy = energy;
+        this.size = size;
+        this.perception = perception;
+
         this.setBounds(x, y, w, h);
     }
+
+    public void setSize(double newSize){
+        this.size = newSize;
+    }
+
 
     public void startMove(int targetX, int targetY, long duration, int targetSize) {
         this.startX = this.x;
@@ -35,7 +50,6 @@ public class slime extends JLabel {
         this.duration = duration;
         this.startTime = System.currentTimeMillis();
         this.isMoving = true;
-        System.out.println("Slime move started");
     }
 
     public void updatePosition() {

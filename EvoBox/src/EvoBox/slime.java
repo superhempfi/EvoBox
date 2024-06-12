@@ -17,6 +17,8 @@ public class slime extends JLabel {
     protected double energy;
     protected double size;
     protected double perception;
+    protected food foodTarget;
+    protected int foodSelection;
 
     public slime(int x, int y, int w, int h, int fw, int fh, ImageIcon slime, double energy, double size, double perception) {
         super();
@@ -40,9 +42,12 @@ public class slime extends JLabel {
     }
 
 
-    public void startMove(int targetX, int targetY, long duration, int targetSize) {
+    public void startMove(int targetX, int targetY, long duration, int targetSize, food aFood, int foodSelected) {
         this.startX = this.x;
         this.startY = this.y;
+
+        this.foodTarget = aFood;
+        this.foodSelection = foodSelected;
 
         this.targetX = targetX + (targetSize / 2) - (this.w / 2);
         this.targetY = targetY + (targetSize / 2) - (this.h / 2);
@@ -55,17 +60,24 @@ public class slime extends JLabel {
     public void updatePosition() {
         if (!isMoving) return;
 
+
         long elapsedTime = System.currentTimeMillis() - startTime;
         double fraction = (double) elapsedTime / duration;
         if (fraction >= 1.0) {
             fraction = 1.0;
             isMoving = false;
+            this.foodTarget.remove(this.foodSelection);
         }
+
+
+
 
         int currentX = (int) (startX + fraction * (targetX - startX));
         int currentY = (int) (startY + fraction * (targetY - startY));
         this.setBounds(currentX, currentY, w, h);
         this.x = currentX;
         this.y = currentY;
+
+
     }
 }

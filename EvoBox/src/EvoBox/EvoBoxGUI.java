@@ -1,6 +1,6 @@
 package EvoBox;
 
-import sun.security.util.ArrayUtil;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,10 +40,11 @@ public class EvoBoxGUI extends JPanel {
     public Random rand = new Random((long) seed);
 
 
-    public int toSpawnFood = 20;   // Anzahl von zu spawnenden Früchten
-    public int toSpawnSlime = 5;   // Anzhal von zu spawnenden Slimes
+    public int toSpawnFood = 200;   // Anzahl von zu spawnenden Früchten
+    public int toSpawnSlime = 1;   // Anzhal von zu spawnenden Slimes
     public int foodSize = 32;      // Größe von Früchten als Faktor    Base : 16
     public int slimeSize = 64;     // Größe von Slimes als Faktor      Base : 16
+    public int moveSpeed = 1000;   // Zeit zum Bewegen in Millisekunden
 
     public EvoBoxGUI() {
 
@@ -74,9 +75,8 @@ public class EvoBoxGUI extends JPanel {
                 if (currentSlimes > 0 && anzFood > 0) {
                     for(int i = 0; i!=currentSlimes; i++){
                         int foodSelected = (int) (Math.random()*allFood.size());                        // Nimmt ein zufälliges Element aus allFood
-                        moveSlimeTowardsFood(allSlimes[i], allFood.get(foodSelected), 100);    // Duration: die Länge um zum Food zu kommen in Millisekunden
-                        gamePanel.remove(allFood.get(foodSelected));                                    // löscht das gewählte Element vom gamePanel
-                        allFood.remove(foodSelected);                                                   // löscht das gewählte Element aus allFood
+                        moveSlimeTowardsFood(allSlimes[i], allFood.get(foodSelected), moveSpeed, foodSelected);    // Duration: die Länge um zum Food zu kommen in Millisekunden
+                        gamePanel.remove(allFood.get(foodSelected));                                    // löscht das gewählte Element vom gamePanel                                                   // löscht das gewählte Element aus allFood
                         anzFood--;
                     }
                 }
@@ -191,11 +191,11 @@ public class EvoBoxGUI extends JPanel {
     }
 
 
-    private void moveSlimeTowardsFood(slime aSlime, food aFood, long duration) {
+    private void moveSlimeTowardsFood(slime aSlime, food aFood, long duration, int foodSelected) {
         int targetX = aFood.getX();
         int targetY = aFood.getY();
         int targetSize = aFood.getHeight();
-        aSlime.startMove(targetX, targetY, duration, targetSize);
+        aSlime.startMove(targetX, targetY, duration, targetSize, aFood, foodSelected);
     }
 
 

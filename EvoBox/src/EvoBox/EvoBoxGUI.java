@@ -19,6 +19,7 @@ public class EvoBoxGUI extends JPanel {
     private JButton moveButton;
     private JButton spawnFood;
     private JButton spawnFood5;
+    private JButton spawnFood500;
     private Timer globalTimer;
 
     // Momentare Anzahl von Food und Maximal zu spawnende
@@ -27,7 +28,6 @@ public class EvoBoxGUI extends JPanel {
 
 
     private int anzFood = 0;
-    private int maxFood = 10;
     //private food[] allFood = new food[maxFood];
 
     // Momentare Anzahl von Slimes
@@ -40,7 +40,7 @@ public class EvoBoxGUI extends JPanel {
     public Random rand = new Random((long) seed);
 
 
-    public int toSpawnFood = 200;   // Anzahl von zu spawnenden Früchten
+    public int toSpawnFood = 20;   // Anzahl von zu spawnenden Früchten
     public int toSpawnSlime = 1;   // Anzhal von zu spawnenden Slimes
     public int foodSize = 32;      // Größe von Früchten als Faktor    Base : 16
     public int slimeSize = 64;     // Größe von Slimes als Faktor      Base : 16
@@ -75,28 +75,23 @@ public class EvoBoxGUI extends JPanel {
                 if (currentSlimes > 0 && anzFood > 0) {
                     for(int i = 0; i!=currentSlimes; i++){
                         int foodSelected = (int) (Math.random()*allFood.size());                        // Nimmt ein zufälliges Element aus allFood
-                        moveSlimeTowardsFood(allSlimes[i], allFood.get(foodSelected), moveSpeed, foodSelected);    // Duration: die Länge um zum Food zu kommen in Millisekunden
-                        gamePanel.remove(allFood.get(foodSelected));                                    // löscht das gewählte Element vom gamePanel                                                   // löscht das gewählte Element aus allFood
-                        anzFood--;
+                        allSlimes[i].setTarget(foodSelected);
+                        moveSlimeTowardsFood(allSlimes[i], allFood.get(foodSelected), foodSelected);    // Duration: die Länge um zum Food zu kommen in Millisekunden
                     }
                 }
             }
         });
         gamePanel.add(moveButton);
 
-
         spawnFood = new JButton("Spawn Food");
         spawnFood.setBounds(buttonX + buttonXDif, buttonY, buttonW, buttonH);
         spawnFood.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int x = (int) (Math.random() * (gamePanel.getWidth() - 75));
-                int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
-                loadFruit(x, y, foodSize);
+                loadFruit(foodSize);
             }
         });
         gamePanel.add(spawnFood);
-
 
         spawnFood5 = new JButton("Spawn Food 5x");
         spawnFood5.setBounds(buttonX + (buttonXDif * 2), buttonY, buttonW, buttonH);
@@ -104,14 +99,23 @@ public class EvoBoxGUI extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < 5; i++) {
-                    int x = (int) (Math.random() * (gamePanel.getWidth() - 75));
-                    int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
-                    loadFruit(x, y, foodSize);
+                    loadFruit(foodSize);
                 }
             }
         });
         gamePanel.add(spawnFood5);
 
+        spawnFood500 = new JButton("Spawn Food 500x");
+        spawnFood500.setBounds(buttonX + (buttonXDif * 3), buttonY, buttonW + 20, buttonH);
+        spawnFood500.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (int i = 0; i < 500; i++) {
+                    loadFruit(foodSize);
+                }
+            }
+        });
+        gamePanel.add(spawnFood500);
 
 
         globalTimer = new Timer(10, new ActionListener() {
@@ -119,6 +123,11 @@ public class EvoBoxGUI extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 for(int i = 0; i < currentSlimes; i++) {
                     allSlimes[i].updatePosition();
+                    if (allSlimes[i].hasArrived()){
+                        int foodSelected = allSlimes[i].returnTarget();
+                        gamePanel.remove(allFood.get(foodSelected));                                    // löscht das gewählte Element vom gamePanel                                                   // löscht das gewählte Element aus allFood
+                        anzFood--;
+                    }
                 }
                 gamePanel.repaint();
             }
@@ -127,13 +136,14 @@ public class EvoBoxGUI extends JPanel {
         globalTimer.start();
 
 
-
-
+            //============================//
+            //Was zu Beginn gespawnt wird //
+            //============================//
 
             for (int i = 0; i < toSpawnFood; i++) {
                 int x = (int) (Math.random() * (gamePanel.getWidth() - 75));
                 int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
-                loadFruit(x, y, foodSize);
+                loadFruit(foodSize);
             }
 
             for (int i = 0; i < toSpawnSlime; i++) {
@@ -144,7 +154,7 @@ public class EvoBoxGUI extends JPanel {
     }
 
 
-    private void loadFruit(int x, int y, int size) {
+    private void loadFruit(int size) {
 
 
         ImageIcon fruit = new ImageIcon(getClass().getClassLoader().getResource("EvoBox/images/apple.png"));
@@ -152,6 +162,11 @@ public class EvoBoxGUI extends JPanel {
         ImageIcon scaledFruitIcon = new ImageIcon(scaledFruit);
 
         int sizeScaled = scaledFruitIcon.getIconHeight();
+
+
+        int x = (int) (Math.random() * (gamePanel.getWidth() - 75));
+        int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
+
 
         food aFood = new food(x, y, sizeScaled, sizeScaled, gamePanel.getWidth(), gamePanel.getHeight(), scaledFruitIcon);
 
@@ -164,8 +179,7 @@ public class EvoBoxGUI extends JPanel {
 
     private void loadSlimes(int x, int y, int scale) {
 
-        int randomInt = rand.nextInt(100-50) + 50;
-        double size = (double) randomInt / 100;
+        double size = 0.5 + (Math.random() * 0.5);
 
         System.out.println(size);
 
@@ -191,11 +205,11 @@ public class EvoBoxGUI extends JPanel {
     }
 
 
-    private void moveSlimeTowardsFood(slime aSlime, food aFood, long duration, int foodSelected) {
+    private void moveSlimeTowardsFood(slime aSlime, food aFood, int foodSelected) {
         int targetX = aFood.getX();
         int targetY = aFood.getY();
         int targetSize = aFood.getHeight();
-        aSlime.startMove(targetX, targetY, duration, targetSize, aFood, foodSelected);
+        aSlime.startMove(targetX, targetY, targetSize, foodSelected);
     }
 
 

@@ -23,6 +23,10 @@ public class slime extends JLabel {
     protected food foodTarget;
     protected int foodSelected;
 
+
+
+
+
     public slime(int x, int y, int w, int h, int fw, int fh, ImageIcon slime, double energy, double size, double perception) {
         super();
         this.x = x;
@@ -36,7 +40,7 @@ public class slime extends JLabel {
         this.energy = energy;
 
         this.size = size;
-        speed = 0.5 / this.size;      // Desto höher der erste Faktor desto geringer die Geschwindigkeit (eine Art scale)
+        speed = 1 / this.size;      // Desto höher der erste Faktor desto geringer die Geschwindigkeit (eine Art scale)
 
         this.perception = perception;
 
@@ -50,12 +54,13 @@ public class slime extends JLabel {
     }
 
 
-    public void startMove(int targetX, int targetY, int targetSize, int foodSelected) {
+    public void startMove(int targetX, int targetY, int targetSize, int foodSelected, food target) {
         this.startX = this.x;
         this.startY = this.y;
 
         this.hasArrived = false;
-        this.foodSelected = foodSelected;
+        this.foodTarget = target;
+
 
 
 
@@ -88,8 +93,9 @@ public class slime extends JLabel {
         if (fraction >= 1.0) {
             fraction = 1.0;
             isMoving = false;
-        }
+            foodTarget.delete();
 
+        }
 
 
         int currentX = (int) (startX + fraction * (targetX - startX));

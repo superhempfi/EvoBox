@@ -24,7 +24,7 @@ public class EvoBoxGUI extends JPanel {
 
     // Momentare Anzahl von Food und Maximal zu spawnende
 
-    private ArrayList<food> allFood = new ArrayList<food>();
+    public ArrayList<food> allFood = new ArrayList<food>();
 
 
     private int anzFood = 0;
@@ -41,7 +41,7 @@ public class EvoBoxGUI extends JPanel {
 
 
     public int toSpawnFood = 20;   // Anzahl von zu spawnenden Früchten
-    public int toSpawnSlime = 1;   // Anzhal von zu spawnenden Slimes
+    public int toSpawnSlime = 4;   // Anzhal von zu spawnenden Slimes
     public int foodSize = 32;      // Größe von Früchten als Faktor    Base : 16
     public int slimeSize = 64;     // Größe von Slimes als Faktor      Base : 16
     public int moveSpeed = 1000;   // Zeit zum Bewegen in Millisekunden
@@ -77,6 +77,7 @@ public class EvoBoxGUI extends JPanel {
                         int foodSelected = (int) (Math.random()*allFood.size());                        // Nimmt ein zufälliges Element aus allFood
                         allSlimes[i].setTarget(foodSelected);
                         moveSlimeTowardsFood(allSlimes[i], allFood.get(foodSelected), foodSelected);    // Duration: die Länge um zum Food zu kommen in Millisekunden
+                        //deleteFood(allFood.get(foodSelected), foodSelected);
                     }
                 }
             }
@@ -123,11 +124,15 @@ public class EvoBoxGUI extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 for(int i = 0; i < currentSlimes; i++) {
                     allSlimes[i].updatePosition();
-                    if (allSlimes[i].hasArrived()){
+
+
+
+
+               /*     if (allSlimes[i].hasArrived()){
                         int foodSelected = allSlimes[i].returnTarget();
                         gamePanel.remove(allFood.get(foodSelected));                                    // löscht das gewählte Element vom gamePanel                                                   // löscht das gewählte Element aus allFood
                         anzFood--;
-                    }
+                    }*/
                 }
                 gamePanel.repaint();
             }
@@ -168,10 +173,11 @@ public class EvoBoxGUI extends JPanel {
         int y = (int) (Math.random() * (gamePanel.getHeight() - 100));
 
 
-        food aFood = new food(x, y, sizeScaled, sizeScaled, gamePanel.getWidth(), gamePanel.getHeight(), scaledFruitIcon);
+        food aFood = new food(x, y, sizeScaled, sizeScaled, gamePanel.getWidth(), gamePanel.getHeight(), scaledFruitIcon, gamePanel,allFood);
 
-        allFood.add(anzFood, aFood);
+        allFood.add(aFood);
         gamePanel.add(aFood);
+        aFood.addIndex(allFood.size() - 1);
         anzFood++;
 
     }
@@ -202,6 +208,8 @@ public class EvoBoxGUI extends JPanel {
         gamePanel.add(aSlime);
         currentSlimes++;
 
+        System.out.println("I'm slime number " + currentSlimes + ". \n And my speed is " + 1/size);
+
     }
 
 
@@ -209,12 +217,20 @@ public class EvoBoxGUI extends JPanel {
         int targetX = aFood.getX();
         int targetY = aFood.getY();
         int targetSize = aFood.getHeight();
-        aSlime.startMove(targetX, targetY, targetSize, foodSelected);
+        aSlime.startMove(targetX, targetY, targetSize, foodSelected, aFood);
+
     }
 
 
+    /*private void deleteFood(food aFood, int foodSelected){
+        gamePanel.remove(allFood.get(foodSelected));
+        allFood.remove(foodSelected);
+        anzFood--;
+    }*/
+
+
     public static void main(String[] args) {
-        JFrame frame = new JFrame("EvoBox.0.1");     // Titel vom Fenster
+        JFrame frame = new JFrame("EvoBox.0.2");     // Titel vom Fenster
         EvoBoxGUI evoBoxGUI = new EvoBoxGUI();
         frame.setContentPane(evoBoxGUI.mainPanel);
 

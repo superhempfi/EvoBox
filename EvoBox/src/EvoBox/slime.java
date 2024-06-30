@@ -1,6 +1,8 @@
 package EvoBox;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 
 public class slime extends JLabel {
 
@@ -9,25 +11,25 @@ public class slime extends JLabel {
     protected int w, h;
     private int startX, startY;
     private int targetX, targetY;
-    private double distanceX, distanceY;
-    private int distanceTotal;
     private long startTime;
     private long duration;
     private boolean isMoving;
     private boolean hasArrived = false;
+    private JPanel Parent;
+    public ArrayList<food> closestFood = new ArrayList<>();
 
     // Attribute
     protected double energy;
     protected double size, speed;
     protected double perception;
     protected food foodTarget;
-    protected int foodSelected;
 
 
 
 
 
-    public slime(int x, int y, int w, int h, int fw, int fh, ImageIcon slime, double energy, double size, double perception) {
+
+    public slime(int x, int y, int w, int h, int fw, int fh, ImageIcon slime, double energy, double size, double perception, JPanel Parent) {
         super();
         this.x = x;
         this.y = y;
@@ -36,6 +38,8 @@ public class slime extends JLabel {
         this.fw = fw;
         this.fh = fh;
         this.setIcon(slime);
+        this.Parent = Parent;
+
 
         this.energy = energy;
 
@@ -49,12 +53,10 @@ public class slime extends JLabel {
         this.setBounds(x, y, w, h);
     }
 
-    public void setSize(double newSize){
-        this.size = newSize;
-    }
 
 
-    public void startMove(int targetX, int targetY, int targetSize, int foodSelected, food target) {
+
+    public void startMove(int targetX, int targetY, int targetSize, food target) {
         this.startX = this.x;
         this.startY = this.y;
 
@@ -68,35 +70,36 @@ public class slime extends JLabel {
         this.targetX = targetX + (targetSize / 2) - (this.w / 2);
         this.targetY = targetY + (targetSize / 2) - (this.h / 2);
 
-        distanceX = this.targetX - startX;
-        distanceY = this.targetY - startY;
-        distanceTotal = (int) Math.sqrt(distanceX*distanceX+distanceY*distanceY);       // Satz des Pythagoras
+        double distanceX = this.targetX - startX;
+        double distanceY = this.targetY - startY;
+        int distanceTotal = (int) Math.sqrt(distanceX * distanceX +distanceY*distanceY);       // Satz des Pythagoras
 
 
 
-        this.duration = (long) (distanceTotal * speed);
-
-
+        this.duration = (long) (distanceTotal * size * 2);
         this.startTime = System.currentTimeMillis();
         this.isMoving = true;
     }
 
-    public void updatePosition() {
+    public void updatePosition(ArrayList<food> allFood, EvoBoxGUI gui) {
         if (!isMoving) {
             this.hasArrived = true;
             return;
         }
 
 
+        if (foodTarget == null || !allFood.contains(foodTarget)) {
+            gui.startSlimeMovement(gui.allSlimes.indexOf(this));
+            return;
+        }
+
         long elapsedTime = System.currentTimeMillis() - startTime;
         double fraction = (double) elapsedTime / duration;
         if (fraction >= 1.0) {
             fraction = 1.0;
             isMoving = false;
-            foodTarget.delete();
 
         }
-
 
         int currentX = (int) (startX + fraction * (targetX - startX));
         int currentY = (int) (startY + fraction * (targetY - startY));
@@ -106,17 +109,39 @@ public class slime extends JLabel {
 
     }
 
-    public int returnTarget(){
-        return foodSelected;
+
+    public void sortClosestFood() {
+        closestFood.sort((aFood, bFood) -> {
+
+            int xDistanceA = x - aFood.getX();
+            int yDistanceA = y - aFood.getY();
+            double totalDistanceA = Math.sqrt(xDistanceA * xDistanceA + yDistanceA * yDistanceA);
+
+
+            int xDistanceB = x - bFood.getX();
+            int yDistanceB = y - bFood.getY();
+            double totalDistanceB = Math.sqrt(xDistanceB * xDistanceB + yDistanceB * yDistanceB);
+
+
+            return Double.compare(totalDistanceA, totalDistanceB);
+        });
     }
 
-    public void setTarget(int newTarget){
-        foodSelected = newTarget;
+
+    public void delete() {
+        Parent.remove(this);
     }
 
-    public boolean hasArrived(){
-        return hasArrived;
-    }
+    public boolean hasArrived() {return hasArrived;}
+
+    public void addFood(food newFood){closestFood.add(newFood);}
+
+    public void setEnergy(double newEnergy) {this.energy = newEnergy;}
+    public void changeEnergy(double newEnergy) {this.energy = this.energy + newEnergy;}
+
+    public double getEnergy() {return energy;}
+    public double getSlimeSize() {return size;}
+    public double getPerception() {return perception;}
 
 
 }

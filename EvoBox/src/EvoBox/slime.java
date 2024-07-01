@@ -1,8 +1,8 @@
 package EvoBox;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Comparator;
 
 public class slime extends JLabel {
 
@@ -15,6 +15,8 @@ public class slime extends JLabel {
     private long duration;
     private boolean isMoving;
     private boolean hasArrived = false;
+    private boolean isDead = false;
+    private long deathTime;
     private JPanel Parent;
     public ArrayList<food> closestFood = new ArrayList<>();
 
@@ -47,7 +49,6 @@ public class slime extends JLabel {
         speed = 1 / this.size;      // Desto höher der erste Faktor desto geringer die Geschwindigkeit (eine Art scale)
 
         this.perception = perception;
-
 
 
         this.setBounds(x, y, w, h);
@@ -88,16 +89,12 @@ public class slime extends JLabel {
         }
 
 
-        if (foodTarget == null || !allFood.contains(foodTarget)) {
-            gui.startSlimeMovement(gui.allSlimes.indexOf(this));
-            return;
-        }
-
         long elapsedTime = System.currentTimeMillis() - startTime;
         double fraction = (double) elapsedTime / duration;
         if (fraction >= 1.0) {
             fraction = 1.0;
             isMoving = false;
+            this.hasArrived = true;
 
         }
 
@@ -107,6 +104,16 @@ public class slime extends JLabel {
         this.x = currentX;
         this.y = currentY;
 
+
+        if (foodTarget == null || !allFood.contains(foodTarget)) {
+            gui.startSlimeMovement(gui.allSlimes.indexOf(this));
+        }
+    }
+
+    public double distanceToFood(food targetFood){
+        int xDistance = this.x - targetFood.getX();
+        int yDistance = this.y - targetFood.getY();
+        return Math.sqrt(xDistance * xDistance + yDistance * yDistance);
     }
 
 
@@ -127,12 +134,22 @@ public class slime extends JLabel {
         });
     }
 
+    public void markAsDead(long currentTime) {
+        isDead = true;
+        deathTime = currentTime;
+        ImageIcon deadSlime = new ImageIcon(getClass().getClassLoader().getResource("EvoBox/images/deadSlime.png"));
+        Image scaledDeadSlime = deadSlime.getImage().getScaledInstance(this.getWidth(), this.getHeight(), Image.SCALE_SMOOTH);
+        ImageIcon scaledDeadSlimeIcon = new ImageIcon(scaledDeadSlime);
+        setIcon(scaledDeadSlimeIcon);
+    }
+
 
     public void delete() {
         Parent.remove(this);
     }
 
     public boolean hasArrived() {return hasArrived;}
+    public boolean isDead() {return isDead;}
 
     public void addFood(food newFood){closestFood.add(newFood);}
 
@@ -143,5 +160,6 @@ public class slime extends JLabel {
     public double getSlimeSize() {return size;}
     public double getPerception() {return perception;}
 
+    public long getDeathTime() {return deathTime;}
 
 }

@@ -56,7 +56,4 @@ public class food extends JLabel {
         this.isTargeted = isTargeted;
     }
 
-
-
-
 }
